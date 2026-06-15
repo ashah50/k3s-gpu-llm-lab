@@ -17,6 +17,36 @@ decisions that came with them.
 - **Cloud parity (planned)** — the same workloads on EKS via Terraform, `terraform destroy` after each demo
 
 ## Architecture
+
+```mermaid
+flowchart TB
+    T14["T14 — dev client<br/>git · kubectl-over-SSH"]
+    GH["GitHub Actions<br/>buildx (amd64 + arm64)"]
+    GHCR["ghcr.io"]
+
+    subgraph LAN["Home LAN · 10.0.0.x"]
+        direction TB
+        subgraph K3S["k3s cluster"]
+            direction LR
+            KCP["k-cp · amd64<br/>control plane · 10.0.0.30<br/>Prometheus · Grafana"]
+            PI["pi5 · arm64<br/>worker · 10.0.0.200"]
+            KCP <-->|flannel VXLAN| PI
+        end
+        NTPC["nt-pc · RTX 4060 Ti<br/>Ollama LLM · 10.0.0.24:11434"]
+    end
+
+    EKS["EKS GPU node · planned<br/>vLLM · spot · ephemeral"]
+
+    T14 -->|git push| GH --> GHCR
+    GHCR -->|pull image| KCP
+    GHCR -->|pull image| PI
+    KCP -->|Service + EndpointSlice| NTPC
+    EKS -.->|terraform up → demo → destroy| K3S
+
+    classDef plan stroke-dasharray:5 5,fill:#f6f6f6,color:#666;
+    class EKS plan;
+```
+
 | Node | Hardware | Arch | Role |
 |---|---|---|---|
 | **k-cp** | HP EliteDesk 800 G4 Mini (i5-8500T, 32 GB) | amd64 | control plane (always-on) |
@@ -44,6 +74,18 @@ make probe-up       # blackbox LLM availability/latency probe
 make status         # what's running
 ```
 (`make` targets drive the cluster from this dev box via SSH to the control plane — see the `Makefile`.)
+
+## Observability
+Grafana (NodePort `30030`) over Prometheus — scraping both nodes + all k8s components,
+plus a blackbox probe on the in-cluster LLM endpoint (availability + latency).
+
+| Cluster health | Per-node (amd64 + arm64) |
+|---|---|
+| ![Cluster](docs/screenshots/cluster-health.png) | ![Nodes](docs/screenshots/nodes.png) |
+
+| LLM endpoint (blackbox) |
+|---|
+| ![LLM probe](docs/screenshots/llm-probe.png) |
 
 ## Status
 - ✅ **Phase 1** — multi-arch bootstrap (k-cp amd64 + pi5 arm64), cross-arch scheduling verified

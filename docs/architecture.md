@@ -1,7 +1,36 @@
 # Architecture
 
-> TODO: commit a topology diagram (`docs/architecture.png`) — nodes / arch / roles / LAN.
-> The diagram + Grafana screenshots are what sell this repo; budget real time there.
+```mermaid
+flowchart TB
+    T14["T14 — dev client<br/>git · kubectl-over-SSH"]
+    GH["GitHub Actions<br/>buildx (amd64 + arm64)"]
+    GHCR["ghcr.io"]
+
+    subgraph LAN["Home LAN · 10.0.0.x"]
+        direction TB
+        subgraph K3S["k3s cluster"]
+            direction LR
+            KCP["k-cp · amd64<br/>control plane · 10.0.0.30<br/>Prometheus · Grafana"]
+            PI["pi5 · arm64<br/>worker · 10.0.0.200"]
+            KCP <-->|flannel VXLAN| PI
+        end
+        NTPC["nt-pc · RTX 4060 Ti<br/>Ollama LLM · 10.0.0.24:11434"]
+    end
+
+    EKS["EKS GPU node · planned<br/>vLLM · spot · ephemeral"]
+
+    T14 -->|git push| GH --> GHCR
+    GHCR -->|pull image| KCP
+    GHCR -->|pull image| PI
+    KCP -->|Service + EndpointSlice| NTPC
+    EKS -.->|terraform up → demo → destroy| K3S
+
+    classDef plan stroke-dasharray:5 5,fill:#f6f6f6,color:#666;
+    class EKS plan;
+```
+
+> Rendered inline by GitHub (diagram-as-code). A static `architecture.png` export can be
+> added later, but the Mermaid source is the source of truth.
 
 ## Nodes
 | Node | Hardware | Arch | Role | Notes |
