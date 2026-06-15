@@ -7,7 +7,7 @@ A *production-shaped* home cluster — not a tutorial follow-along. Real hardwar
 constraints (a LAN-only GPU host, a mixed arm64/amd64 node pool), and the design
 decisions that came with them.
 
-![CI](https://github.com/REPLACE_OWNER/k3s-gpu-llm-lab/actions/workflows/build.yml/badge.svg)
+![CI](https://github.com/ashah50/k3s-gpu-llm-lab/actions/workflows/build.yml/badge.svg)
 
 ## What this demonstrates
 - **Multi-arch bootstrap** — k3s control plane (amd64) + a Raspberry Pi worker (arm64), one cluster
