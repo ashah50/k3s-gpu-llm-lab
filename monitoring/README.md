@@ -23,9 +23,10 @@ PVC; Grafana on **NodePort 30030**.
   kubectl -n monitoring get secret kube-prometheus-stack-grafana \
     -o jsonpath='{.data.admin-password}' | base64 -d; echo
   ```
-- Dashboards: dozens built-in (cluster / per-node / k8s). For the LLM endpoint, import
-  dashboard **7587** (Blackbox Exporter). *TODO:* codify dashboards as `grafana_dashboard`
-  ConfigMaps so they survive restarts.
+- Dashboards: dozens built-in (cluster / per-node / k8s). The **LLM Endpoint** dashboard is
+  **provisioned as code** — `llm-dashboard.yaml` is a `grafana_dashboard` ConfigMap the Grafana
+  sidecar auto-loads (survives restarts, no Grafana PVC needed; datasource bound to the
+  `prometheus` uid). Apply: `kubectl apply -f llm-dashboard.yaml`.
 
 ## LLM endpoint probe (blackbox)
 `blackbox-probe.yaml` is a prometheus-operator `Probe` that has blackbox-exporter hit the
