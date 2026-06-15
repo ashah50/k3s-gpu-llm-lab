@@ -1,0 +1,26 @@
+prometheus:
+  prometheusSpec:
+    nodeSelector: {kubernetes.io/arch: amd64}
+    retention: 15d
+    resources:
+      requests: {cpu: 200m, memory: 512Mi}
+      limits: {memory: 1500Mi}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes: ["ReadWriteOnce"]
+          resources: {requests: {storage: 20Gi}}
+grafana:
+  nodeSelector: {kubernetes.io/arch: amd64}
+  service: {type: NodePort, nodePort: 30030}
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector: {kubernetes.io/arch: amd64}
+kube-state-metrics:
+  nodeSelector: {kubernetes.io/arch: amd64}
+prometheusOperator:
+  nodeSelector: {kubernetes.io/arch: amd64}
+  admissionWebhooks:
+    patch:
+      nodeSelector: {kubernetes.io/arch: amd64}
