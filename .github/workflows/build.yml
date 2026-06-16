@@ -3,12 +3,14 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/hello-arch/**'
+      - 'apps/hello-arch/main.go'
+      - 'apps/hello-arch/go.mod'
+      - 'apps/hello-arch/Dockerfile'
       - '.github/workflows/build.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   packages: write   # push to ghcr.io
 
 jobs:
@@ -31,6 +33,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build & push (amd64 + arm64)
+        id: build
         uses: docker/build-push-action@v7
         with:
           context: apps/hello-arch
@@ -41,3 +44,13 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/hello-arch:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Pin deployment to the immutable digest
+        run: |
+          DIGEST='${{ steps.build.outputs.digest }}'
+          sed -i -E "s#^(\s*image:\s*ghcr\.io/${{ github.repository_owner }}/hello-arch)([@:][^[:space:]]+)?#\1@${DIGEST}#" apps/hello-arch/deployment.yaml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/hello-arch/deployment.yaml
+          git commit -m "ci: pin hello-arch to ${DIGEST} [skip ci]" || { echo 'no change'; exit 0; }
+          git push
