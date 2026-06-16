@@ -1,0 +1,13 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: polymarket-basicauth
+  namespace: polymarket
+spec:
+  encryptedData:
+    users: AgBs+f+YG+L9ukkBc4ZUPNKmd2W/eYzD7oDEY5mTHrZyLx9JqTBe6lGsRUojvE4cSkvdq1qEFN5F16xnwqL8yezlSeAIRtVNDKUsCIJsXyazwJR5O9X6DoLqCtmyV2N1HOB4lC8ecpOMETLLhiDKZtQfq/zOtf4OY86Jmvs7TsD7bA6+dT19i0Bb9obn8UCcAdIEKzNQ1pQsxPpalmpStRIxfMmMHYUk1JcobwefgcPKmUNrRhx4GWlYM0RZa708gtIxe6deiwiFwH1aejZJH9CBnrI2ewiXujhX5TjN2E4tVluc5em2NRhFQFyu/RB7f2UsHyKD8ER+QfUurW+WQRe1jVoGYwfg76/06dZHUG27ER6UcD51fyUkDE2GSP5w4DzMmKgASWAqf7/p9BfTGQD+qsTIFDbElCsr/VlXgDq+tndiJPzgGljyeG9p5Nrtz1N16D2ND9ROwV9Pftp8M8H7DWLuIAr2qP46a83xIEbjHlf3D1ybmPICfLhTOr1W6ZaRoGv1PEA+16V7n7aaPUuNyjvaQhhxruSll3DW11FPtBlE49apyv+Y9t4QKtdnBIIfqF/8UFTT3Ja3eDPynmZUqBJ+LFIBSHfpLByo2i0YoYBra1gZqohspy/tk0lnLTg3UEQf8O1nSMlYDIICgaSfhTL7u50+zOHT5tgIBNdgv0DN8+Ibb8F4wV1mjwhPuRy3M6SJF76zhd+oAOh6zvjrJdUPOTtkIVCjagLsmCkyPhcK17xxB5ZIS+Y=
+  template:
+    metadata:
+      name: polymarket-basicauth
+      namespace: polymarket
