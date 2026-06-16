@@ -7,7 +7,7 @@ Polymarket read-only API stack deployed on k3s — a frozen, sanitized snapshot 
 ## Architecture
 
 - **Namespace:** `polymarket` (isolated from default workloads)
-- **Postgres 16** — StatefulSet + PVC (`postgres-pvc`), pinned to `amd64` (T14/control-plane node). Seeded out-of-band from a sanitized private dump; never receives live traffic.
+- **Postgres 16** — StatefulSet + PVC (`data-postgres-0`), pinned to `amd64` (T14/control-plane node). Seeded out-of-band from a sanitized private dump; never receives live traffic.
 - **API Deployment** — 2 replicas, multi-arch (`amd64` + `arm64`/Pi5), image from GHCR (`ghcr.io/ashah50/polymarket-api`). Exposes `/healthz` and the read endpoints listed below.
 - **Traefik Ingress + BasicAuth** — host `polymarket.k3s.local`; basic-auth Middleware enforced at the ingress layer (user: `demo`).
 - **NetworkPolicy** — Postgres only accepts traffic from the `api` pods within the namespace; no external ingress to Postgres.
@@ -102,7 +102,6 @@ Replace `<pass>` with the value from the `basicauth` secret.
 | `/markets` | Market listing |
 | `/wallet/{address}` | Wallet summary for a (hashed) address |
 | `/wallet/{address}/trades` | Trade history for a (hashed) address |
-| `/confluence` | Confluence signal data |
 | `/copy-clusters` | Copy-cluster groupings |
 
-> **Note:** `/leaderboard` is deprecated in the app and returns a structured removal notice (deprecated 2026-05-03). Use `/stats` and `/markets` instead.
+> **Note:** `/leaderboard` and `/confluence` are deprecated in the app and return a structured removal notice (deprecated 2026-05-03). Use `/stats` and `/markets` instead.
