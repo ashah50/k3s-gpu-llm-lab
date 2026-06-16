@@ -20,7 +20,7 @@ spec:
           matchLabels: {app: hello-arch}
       containers:
       - name: hello
-        image: ghcr.io/ashah50/hello-arch:latest  # set by CI / `make` after first push
+        image: ghcr.io/ashah50/hello-arch@sha256:7e34ab6df5bbaead8e3e10d1ecb2d7c6411b7e6e142811ab150fcfe387fe59da  # set by CI / `make` after first push
         ports:
         - containerPort: 8080
         readinessProbe:
