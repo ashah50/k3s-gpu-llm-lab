@@ -8,3 +8,6 @@ kubeconfig
 .DS_Store
 *.tmp
 *.swp
+apps/polymarket/*secret*.yaml
+**/seed.sql
+polymarket-seed/
