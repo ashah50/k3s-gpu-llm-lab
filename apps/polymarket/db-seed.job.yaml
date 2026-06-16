@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata: { name: db-seed, namespace: polymarket }
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector: { kubernetes.io/arch: amd64 }
+      containers:
+      - name: seed
+        image: postgres:16-alpine
+        envFrom: [{ secretRef: { name: polymarket-db } }]
+        command: ["sh","-c"]
+        args:
+          - |
+            until pg_isready -h postgres -U "$POSTGRES_USER"; do sleep 2; done
+            if psql -h postgres -U "$POSTGRES_USER" -d "$DB_NAME" -tAc "select to_regclass('public.scores')" | grep -q scores; then
+              echo "already seeded"; exit 0; fi
+            echo "DB empty - load the private seed artifact via: kubectl exec -i postgres-0 -- psql ... < seed.sql (Task 5 Step 3)"; exit 0
